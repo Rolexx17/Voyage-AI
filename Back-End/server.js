@@ -9,6 +9,7 @@ const toolsRoutes = require('./routes/toolsRoutes');
 const expenseRoutes = require('./routes/expenseRoutes');
 const emergencyRoutes = require('./routes/emergencyRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
+const plannerRoutes = require('./routes/plannerRoutes');
 
 const app = express();
 
@@ -29,6 +30,7 @@ app.use('/api/tools', toolsRoutes);
 app.use('/api/expenses', expenseRoutes);
 app.use('/api/emergency', emergencyRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/planner', plannerRoutes);
 
 // Start Server
 app.listen(config.app.port, () => {
