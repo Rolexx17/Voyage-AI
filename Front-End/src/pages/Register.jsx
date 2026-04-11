@@ -31,9 +31,9 @@ export default function Register() {
   
   const handleBack = () => setStep(s => s - 1);
 
-  const handleSubmit = () => {
-    register(formData);
-    navigate('/');
+  const handleSubmit = async () => {
+    const success = await register(formData);
+    if (success) navigate('/login'); // Pindah ke login setelah sukses
   };
 
   const toggleInterest = (interest) => {
