@@ -22,59 +22,51 @@ class EmergencyController {
     try {
       const { lat, lng } = req.query;
 
+      // Default data jika GPS mati
       if (!lat || !lng) {
         return sendSuccess(res, 200, "Using default", {
           ...emergencyDirectory.default,
-          hospital: { name: "Nearest Hospital", info: "Search on Maps" }
+          region: "Global",
+          hospital: { name: "Local General Hospital", info: "Please search 'Hospital' on Google Maps for real-time nearest results." }
         });
       }
 
-      // 1. Dapatkan Nama Kota & Negara dari Koordinat GPS
+      // 1. Geocoding
       const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`, {
         headers: { 'User-Agent': 'VoyageAI-App' }
       });
       const geoData = await response.json();
-
       const countryCode = geoData.address?.country_code?.toLowerCase() || 'default';
-      const localNumbers = emergencyDirectory[countryCode] || emergencyDirectory.default;
+      const localNumbers = JSON.parse(JSON.stringify(emergencyDirectory[countryCode] || emergencyDirectory.default));
       const region = geoData.address?.city || geoData.address?.state || localNumbers.country;
       localNumbers.region = region;
 
-      // 2. Gunakan AI untuk mencari Rumah Sakit Utama di region tersebut
-      let hospitalData = { name: "Central General Hospital", info: "Major medical facility in this area" };
+      // 2. AI Hospital Search dengan Protection
+      let hospitalData = { name: "Regional General Hospital", info: "Major medical facility in this region." };
       
       try {
-        const prompt = `
-          The user is currently located in ${region}, ${localNumbers.country}.
-          Name ONE major, well-known General Hospital in or very close to this specific area.
-          Respond STRICTLY in JSON format:
-          {
-            "name": "Exact Name of the Hospital",
-            "info": "Short description (e.g., 'Major general hospital in the city center')"
-          }
-        `;
+        const prompt = `Region: ${region}, ${localNumbers.country}. One major General Hospital name & short info. JSON: { "name": "...", "info": "..." }`;
 
         const chatCompletion = await groq.chat.completions.create({
           messages: [{ role: "user", content: prompt }],
           model: "llama-3.1-8b-instant",
-          temperature: 0.1, // Sangat akurat
+          temperature: 0.1,
+          max_tokens: 150, // Sangat sedikit agar hemat
           response_format: { type: "json_object" },
         });
 
         hospitalData = JSON.parse(chatCompletion.choices[0].message.content);
       } catch (aiError) {
-        console.error("AI Hospital Search Error:", aiError.message);
+        console.warn("AI Hospital search failed/limit reached. Using default.");
       }
 
-      // Gabungkan data nomor darurat + data rumah sakit
       return sendSuccess(res, 200, "Local data fetched", {
         ...localNumbers,
         hospital: hospitalData
       });
 
     } catch (error) {
-      console.error("Emergency Locator Error:", error);
-      return sendSuccess(res, 200, "Fallback to default", emergencyDirectory.default);
+      return sendSuccess(res, 200, "Fallback", emergencyDirectory.default);
     }
   }
 }

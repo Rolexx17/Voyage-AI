@@ -12,17 +12,35 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [locationStatus, setLocationStatus] = useState("Detecting location...");
+  const [locationStatus, setLocationStatus] = useState("Checking cache...");
 
   useEffect(() => {
     const fetchDashboardData = async (lat, lng) => {
       try {
         const token = localStorage.getItem('token');
-        // Gunakan template literal yang benar
-        let url = `http://localhost:5000/api/dashboard/insights`;
-        if (lat && lng) {
-          url += `?lat=${lat}&lng=${lng}`;
+        const CACHE_KEY = `voyage_dashboard_cache_${user?.id}`;
+        const CACHE_EXPIRATION = 60 * 60 * 1000; // 1 Jam dalam milidetik
+
+        // 1. CEK CACHE TERLEBIH DAHULU
+        const cachedRaw = localStorage.getItem(CACHE_KEY);
+        if (cachedRaw) {
+          const cachedData = JSON.parse(cachedRaw);
+          const isExpired = Date.now() - cachedData.timestamp > CACHE_EXPIRATION;
+          
+          // Jika data ada dan belum expired, gunakan data cache
+          if (!isExpired) {
+            console.log("Using Cached Dashboard Data");
+            setData(cachedData.content);
+            setLoading(false);
+            return;
+          }
         }
+
+        // 2. JIKA CACHE TIDAK ADA/EXPIRED, BARU PANGGIL AI
+        setLocationStatus("Generating fresh AI insights...");
+        const currentIP = window.location.hostname;
+        let url = `http://${currentIP}:5000/api/dashboard/insights`;
+        if (lat && lng) url += `?lat=${lat}&lng=${lng}`;
 
         const res = await fetch(url, { 
           headers: { 'Authorization': `Bearer ${token}` } 
@@ -30,8 +48,14 @@ export default function Dashboard() {
         const result = await res.json();
 
         if (result.success) {
+          // SIMPAN KE CACHE
+          const cacheObject = {
+            timestamp: Date.now(),
+            content: result.data
+          };
+          localStorage.setItem(CACHE_KEY, JSON.stringify(cacheObject));
+          
           setData(result.data);
-          console.log("Dashboard Data Loaded:", result.data); // Untuk debugging
         }
       } catch (err) {
         console.error("Dashboard fetch error:", err);
@@ -40,15 +64,13 @@ export default function Dashboard() {
       }
     };
 
+    // Logika Geolocation tetap sama
     if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          setLocationStatus("Generating AI insights for your area...");
           fetchDashboardData(position.coords.latitude, position.coords.longitude);
         },
         (error) => {
-          console.warn("Location permission denied");
-          setLocationStatus("Using global traveler insights...");
           fetchDashboardData(null, null);
         },
         { timeout: 10000 }
@@ -56,7 +78,7 @@ export default function Dashboard() {
     } else {
       fetchDashboardData(null, null);
     }
-  }, []);
+  }, [user?.id]);
 
   return (
     <div className="space-y-8 py-4">

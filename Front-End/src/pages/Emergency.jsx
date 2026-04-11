@@ -17,50 +17,72 @@ export default function Emergency() {
     const fetchNumbers = async (lat, lng) => {
       try {
         const token = localStorage.getItem('token');
+        
+        // --- LOGIKA CACHE START ---
+        const CACHE_KEY = `voyage_emergency_cache`;
+        const cachedRaw = localStorage.getItem(CACHE_KEY);
+        
+        if (cachedRaw) {
+          const cached = JSON.parse(cachedRaw);
+          // Jika lokasi mirip (selisih < 0.01 derajat atau sekitar 1km) dan belum 24 jam
+          const isSameLocation = lat && lng && 
+                                Math.abs(cached.lat - lat) < 0.01 && 
+                                Math.abs(cached.lng - lng) < 0.01;
+          const isFresh = Date.now() - cached.timestamp < 24 * 60 * 60 * 1000;
+
+          if (isSameLocation && isFresh) {
+            console.log("Using Cached Emergency Data");
+            applyData(cached.data);
+            setLoading(false);
+            return;
+          }
+        }
+        // --- LOGIKA CACHE END ---
+
+        const currentIP = window.location.hostname;
         const url = lat && lng 
-          ? `http://localhost:5000/api/emergency/local-numbers?lat=${lat}&lng=${lng}`
-          : `http://localhost:5000/api/emergency/local-numbers`;
+          ? `http://${currentIP}:5000/api/emergency/local-numbers?lat=${lat}&lng=${lng}`
+          : `http://${currentIP}:5000/api/emergency/local-numbers`;
           
         const res = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` } });
-        const data = await res.json();
+        const result = await res.json();
 
-        if (data.success) {
-          const result = data.data;
-          setLocationName(result.region || result.country || "Global Standard");
-          
-          setContacts([
-            { label: "Local Police", number: result.police, icon: ShieldAlert, color: "bg-blue-600" },
-            { label: "Medical Help", number: result.medical, icon: HeartPulse, color: "bg-emerald-500" },
-            { label: "Fire & Rescue", number: result.fire, icon: Flame, color: "bg-orange-500" }
-          ]);
-
-          if (result.hospital) {
-            setHospital(result.hospital);
-          }
+        if (result.success) {
+          applyData(result.data);
+          // Simpan ke Cache
+          localStorage.setItem(CACHE_KEY, JSON.stringify({
+            lat, lng, timestamp: Date.now(), data: result.data
+          }));
         }
       } catch (err) {
         console.error("Failed to fetch emergency numbers");
         setLocationName("Global Standard (112)");
-        setHospital({ name: "Nearest Hospital", info: "Please search manually on Maps" });
       } finally {
         setLoading(false);
       }
     };
 
+    const applyData = (result) => {
+      setLocationName(result.region || result.country || "Global Standard");
+      setContacts([
+        { label: "Local Police", number: result.police, icon: ShieldAlert, color: "bg-blue-600" },
+        { label: "Medical Help", number: result.medical, icon: HeartPulse, color: "bg-emerald-500" },
+        { label: "Fire & Rescue", number: result.fire, icon: Flame, color: "bg-orange-500" }
+      ]);
+      if (result.hospital) setHospital(result.hospital);
+    };
+
     if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition(
         (position) => fetchNumbers(position.coords.latitude, position.coords.longitude),
-        () => {
-          console.warn("GPS Denied, using defaults.");
-          fetchNumbers(null, null);
-        },
+        () => fetchNumbers(null, null),
         { timeout: 5000 }
       );
     } else {
       fetchNumbers(null, null);
     }
   }, []);
-
+  
   // Membuat URL Google Maps berdasarkan Nama Rumah Sakit + Kota
   const mapQuery = encodeURIComponent(`${hospital.name} ${locationName}`);
   const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${mapQuery}`;
