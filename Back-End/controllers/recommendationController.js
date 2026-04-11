@@ -51,7 +51,7 @@ class RecommendationController {
           { role: "system", content: "You strictly provide 10 items. You never suggest places outside the requested city." },
           { role: "user", content: prompt }
         ],
-        model: "llama-3.3-70b-versatile", // Model cerdas yang stabil
+        model: "llama-3.1-8b-instant", // Model cerdas yang stabil
         temperature: 0.3,
         response_format: { type: "json_object" },
       });

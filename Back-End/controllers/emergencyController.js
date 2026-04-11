@@ -56,7 +56,7 @@ class EmergencyController {
 
         const chatCompletion = await groq.chat.completions.create({
           messages: [{ role: "user", content: prompt }],
-          model: "llama-3.3-70b-versatile",
+          model: "llama-3.1-8b-instant",
           temperature: 0.1, // Sangat akurat
           response_format: { type: "json_object" },
         });
