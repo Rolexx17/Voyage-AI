@@ -11,6 +11,7 @@ import Expenses from './pages/Expenses';
 import Profile from './pages/Profile';
 import Emergency from './pages/Emergency';
 import InteractiveMap from './pages/Map';
+import TravelTools from './pages/TravelTools';
 import { useAuthStore } from './store/useAuthStore';
 
 
@@ -34,6 +35,7 @@ export default function App() {
           <Route path="profile" element={<Profile />} />
           <Route path="emergency" element={<Emergency />} />
           <Route path="map" element={<InteractiveMap />} />
+          <Route path="tools" element={<TravelTools />} />
         </Route>
       </Routes>
     </BrowserRouter>

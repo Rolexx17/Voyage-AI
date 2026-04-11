@@ -5,6 +5,10 @@ const config = require('./config');
 // Import Routes
 const authRoutes = require('./routes/authRoutes');
 const recommendationRoutes = require('./routes/recommendationRoutes');
+const toolsRoutes = require('./routes/toolsRoutes');
+const expenseRoutes = require('./routes/expenseRoutes');
+const emergencyRoutes = require('./routes/emergencyRoutes');
+const dashboardRoutes = require('./routes/dashboardRoutes');
 
 const app = express();
 
@@ -21,6 +25,10 @@ app.use((req, res, next) => {
 // 3. DAFTARKAN ROUTES
 app.use('/api/auth', authRoutes);
 app.use('/api/recommendations', recommendationRoutes);
+app.use('/api/tools', toolsRoutes);
+app.use('/api/expenses', expenseRoutes);
+app.use('/api/emergency', emergencyRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 
 // Start Server
 app.listen(config.app.port, () => {

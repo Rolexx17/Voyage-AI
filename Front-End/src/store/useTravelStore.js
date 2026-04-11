@@ -1,27 +1,49 @@
-// src/store/useTravelStore.js
 import { create } from 'zustand';
 
-const useTravelStore = create((set) => ({
-  expenses: JSON.parse(localStorage.getItem('voyage_expenses')) || [],
-  itineraries: JSON.parse(localStorage.getItem('voyage_itineraries')) || [],
-  
-  addExpense: (expense) => set((state) => {
-    const newExpenses = [...state.expenses, { ...expense, id: Date.now() }];
-    localStorage.setItem('voyage_expenses', JSON.stringify(newExpenses));
-    return { expenses: newExpenses };
-  }),
+const API_BASE = 'http://192.168.1.8:5000';
 
-  deleteExpense: (id) => set((state) => {
-    const newExpenses = state.expenses.filter(e => e.id !== id);
-    localStorage.setItem('voyage_expenses', JSON.stringify(newExpenses));
-    return { expenses: newExpenses };
-  }),
+const useTravelStore = create((set, get) => ({
+  expenses: [],
+  itineraries: [],
+  loading: false,
 
-  saveItinerary: (itinerary) => set((state) => {
-    const newItineraries = [...state.itineraries, { ...itinerary, id: Date.now() }];
-    localStorage.setItem('voyage_itineraries', JSON.stringify(newItineraries));
-    return { itineraries: newItineraries };
-  })
+  fetchExpenses: async () => {
+    const token = localStorage.getItem('token');
+    try {
+      const res = await fetch(`${API_BASE}/api/expenses`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if(data.success) set({ expenses: data.data });
+    } catch (e) { console.error("Fetch expenses failed"); }
+  },
+
+  addExpense: async (expense) => {
+    const token = localStorage.getItem('token');
+    try {
+      const res = await fetch(`${API_BASE}/api/expenses`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(expense)
+      });
+      const data = await res.json();
+      if(data.success) set((state) => ({ expenses: [data.data, ...state.expenses] }));
+    } catch (e) { alert("Failed to add expense to database"); }
+  },
+
+  deleteExpense: async (id) => {
+    const token = localStorage.getItem('token');
+    try {
+      await fetch(`${API_BASE}/api/expenses/${id}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      set((state) => ({ expenses: state.expenses.filter(e => e.id !== id) }));
+    } catch (e) { console.error("Delete failed"); }
+  }
 }));
 
 export default useTravelStore;

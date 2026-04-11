@@ -1,7 +1,8 @@
 import { create } from 'zustand';
 
+const API_BASE = 'http://192.168.1.8:5000';
+
 export const useRecommendationStore = create((set, get) => ({
-  // TAMBAHKAN transport: [] DI SINI
   data: { destination: [], hotel: [], food: [], photospot: [], transport: [] }, 
   loading: false,
   error: null,
@@ -13,7 +14,6 @@ export const useRecommendationStore = create((set, get) => ({
     if (get().currentLocation !== location) {
       set({ 
         currentLocation: location,
-        // TAMBAHKAN JUGA DI SINI SAAT RESET
         data: { destination: [], hotel: [], food: [], photospot: [], transport: [] } 
       });
     }
@@ -22,7 +22,7 @@ export const useRecommendationStore = create((set, get) => ({
     const token = localStorage.getItem('token');
     
     try {
-      const response = await fetch(`http://localhost:5000/api/recommendations/${category}?location=${encodeURIComponent(location)}`, {
+      const response = await fetch(`${API_BASE}/api/recommendations/${category}?location=${encodeURIComponent(location)}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const result = await response.json();
