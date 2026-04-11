@@ -15,6 +15,9 @@ const config = {
   auth: {
     jwtSecret: process.env.JWT_SECRET,
     saltRounds: 10,
+  },
+  ai: {
+    groqApiKey: process.env.GROQ_API_KEY,
   }
 };
 

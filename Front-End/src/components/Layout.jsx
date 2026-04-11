@@ -4,7 +4,7 @@ import { NavLink, useNavigate, Outlet, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   LayoutDashboard, Map, Wallet, User, ShieldAlert, 
-  LogOut, Sparkles, Sun, Moon, Menu, X 
+  LogOut, Sparkles, Sun, Moon, Menu, X, Star
 } from 'lucide-react';
 import { useAuthStore } from '../store/useAuthStore';
 import { useThemeStore } from '../store/useThemeStore';
@@ -44,6 +44,7 @@ export default function Layout() {
   const menu = [
     { to: "/", icon: LayoutDashboard, label: "Dashboard" },
     { to: "/planner", icon: Sparkles, label: "AI Planner" },
+    { to: "/recommendations", icon: Star, label: "For You" },
     { to: "/expenses", icon: Wallet, label: "Expenses" },
     { to: "/map", icon: Map, label: "3D Map" },
     { to: "/emergency", icon: ShieldAlert, label: "Emergency" },
