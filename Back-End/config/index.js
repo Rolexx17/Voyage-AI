@@ -9,7 +9,7 @@ const config = {
     connectionString: process.env.DATABASE_URL,
   },
   auth: {
-    jwtSecret: process.env.JWT_SECRET || 'super_secret_voyage',
+    jwtSecret: process.env.JWT_SECRET,
     saltRounds: 10,
   },
   ai: {
