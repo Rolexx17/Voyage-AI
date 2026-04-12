@@ -1,23 +1,28 @@
 const { Pool } = require('pg');
 require('dotenv').config();
 
-// Solusi untuk error SELF_SIGNED_CERT_IN_CHAIN
+// Mematikan validasi SSL ketat untuk koneksi IPv4/Pooler
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: {
-    // Mematikan validasi ketat agar bisa konek ke Pooler IPv4
-    rejectUnauthorized: false 
+    rejectUnauthorized: false
   },
-  connectionTimeoutMillis: 10000, 
+  max: 20,
   idleTimeoutMillis: 30000,
-  max: 10
+  connectionTimeoutMillis: 10000,
 });
 
-// Tambahkan log saat berhasil konek
+// Log jika koneksi berhasil
 pool.on('connect', () => {
-  // Hanya log sekali saat koneksi pertama kali terbuka jika perlu
+  console.log('🐘 PostgreSQL Pool Connected to Supabase');
+});
+
+// Log jika ada error mendadak pada pool
+pool.on('error', (err) => {
+  console.error('❌ Unexpected error on idle client', err);
+  process.exit(-1);
 });
 
 module.exports = {

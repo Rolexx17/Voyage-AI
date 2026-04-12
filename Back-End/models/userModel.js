@@ -2,44 +2,40 @@ const db = require('../db');
 
 class UserModel {
   static async findByEmail(email) {
-    const query = 'SELECT * FROM users WHERE email = $1';
-    const result = await db.query(query, [email]);
-    return result.rows[0];
-  }
-
-  static async create(userData) {
-    const { name, email, password, style, budget, food, travelType, interests, hasPets } = userData;
-    const query = `
-      INSERT INTO users (name, email, password, style, budget, food, travel_type, interests, has_pets)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-      RETURNING id, name, email
-    `;
-    const values = [name, email, password, style, budget, food, travelType, interests, hasPets];
-    const result = await db.query(query, values);
+    const result = await db.query('SELECT * FROM users WHERE email = $1', [email]);
     return result.rows[0];
   }
 
   static async findById(id) {
-    const query = 'SELECT * FROM users WHERE id = $1';
-    const result = await db.query(query, [id]);
+    const result = await db.query('SELECT * FROM users WHERE id = $1', [id]);
     return result.rows[0];
   }
 
-  static async updateBasicInfo(id, { name, email }) {
+  static async create({ name, email, password, style, budget, food, travelType, interests, hasPets }) {
+    // Sesuaikan nama kolom dengan tabel di server.js (travel_type, has_pets)
     const query = `
-      UPDATE users 
-      SET name = $1, email = $2 
-      WHERE id = $3 
-      RETURNING id, name, email, style
+      INSERT INTO users (name, email, password, style, budget, food, travel_type, interests, has_pets)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+      RETURNING id, name, email, created_at
     `;
-    const result = await db.query(query, [name, email, id]);
+    const values = [
+      name, 
+      email, 
+      password, 
+      style || null, 
+      budget || null, 
+      food || null, 
+      travelType || null, 
+      interests || null, 
+      hasPets || false
+    ];
+    
+    const result = await db.query(query, values);
     return result.rows[0];
   }
 
   static async updatePassword(id, hashedPassword) {
-    const query = 'UPDATE users SET password = $1 WHERE id = $2';
-    await db.query(query, [hashedPassword, id]);
-    return true;
+    await db.query('UPDATE users SET password = $1 WHERE id = $2', [hashedPassword, id]);
   }
 }
 
