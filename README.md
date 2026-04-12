@@ -9,11 +9,13 @@ Aplikasi ini menggunakan Cloud Database (Supabase), sehingga tidak memerlukan in
 
 ### 1. Setup Backend
 - Masuk ke folder `Back-End`.
+- `npm install`
 - Jalankan server: `node server.js`
 - (Tabel database akan otomatis terinisialisasi saat server running).
 
 ### 2. Setup Frontend
 - Masuk ke folder `Front-End`.
+- `npm install`
 - Jalankan aplikasi: `npm run dev`
 
 
