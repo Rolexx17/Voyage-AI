@@ -1,3 +1,9 @@
+# Anggota :
+### 1. Cherish Evangeline (241110597)
+### 2. Justin Wisely (241110868)
+### 3. Kelvin Kurniawan (241112232)
+
+
 # ide projek kami
 # Voyage-AI
 Voyage-AI adalah aplikasi web Travel Planner berbasis AI yang menghadirkan perencanaan perjalanan end-to-end secara personal melalui itinerary cerdas, rekomendasi destinasi yang relevan, kontrol anggaran multi-currency, serta insight perjalanan real-time dalam antarmuka modern, interaktif, dan mudah digunakan.
