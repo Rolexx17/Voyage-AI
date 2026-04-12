@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 
-// Ganti IP sesuai Network kamu
-const API_BASE = 'http://192.168.1.8:5000'; 
+// Menggunakan Environment Variable dari Vite, fallback ke localhost
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'; 
 
 export const useAuthStore = create((set) => ({
   user: JSON.parse(localStorage.getItem('user')) || null,

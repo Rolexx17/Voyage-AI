@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-const API_BASE = 'http://192.168.1.8:5000';
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 
 export const useRecommendationStore = create((set, get) => ({
   data: { destination: [], hotel: [], food: [], photospot: [], transport: [] }, 

@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-const API_BASE = 'http://192.168.1.8:5000';
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 
 const useTravelStore = create((set, get) => ({
   expenses: [],
@@ -8,14 +8,19 @@ const useTravelStore = create((set, get) => ({
   loading: false,
 
   fetchExpenses: async () => {
+    set({ loading: true });
     const token = localStorage.getItem('token');
     try {
       const res = await fetch(`${API_BASE}/api/expenses`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await res.json();
-      if(data.success) set({ expenses: data.data });
-    } catch (e) { console.error("Fetch expenses failed"); }
+      if(data.success) set({ expenses: data.data, loading: false });
+      else set({ loading: false });
+    } catch (e) { 
+      console.error("Fetch expenses failed"); 
+      set({ loading: false });
+    }
   },
 
   addExpense: async (expense) => {
@@ -30,8 +35,12 @@ const useTravelStore = create((set, get) => ({
         body: JSON.stringify(expense)
       });
       const data = await res.json();
-      if(data.success) set((state) => ({ expenses: [data.data, ...state.expenses] }));
-    } catch (e) { alert("Failed to add expense to database"); }
+      if(data.success) {
+        set((state) => ({ expenses: [data.data, ...state.expenses] }));
+      }
+    } catch (e) { 
+      alert("Failed to add expense to database"); 
+    }
   },
 
   deleteExpense: async (id) => {
@@ -42,7 +51,9 @@ const useTravelStore = create((set, get) => ({
         headers: { 'Authorization': `Bearer ${token}` }
       });
       set((state) => ({ expenses: state.expenses.filter(e => e.id !== id) }));
-    } catch (e) { console.error("Delete failed"); }
+    } catch (e) { 
+      console.error("Delete failed"); 
+    }
   }
 }));
 
