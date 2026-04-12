@@ -3,6 +3,19 @@
 ### 2. Justin Wisely (241110868)
 ### 3. Kelvin Kurniawan (241112232)
 
+## Cara Menjalankan Project
+
+Aplikasi ini menggunakan Cloud Database (Supabase), sehingga tidak memerlukan instalasi PostgreSQL lokal atau Docker.
+
+### 1. Setup Backend
+- Masuk ke folder `Back-End`.
+- Jalankan server: `node server.js`
+- (Tabel database akan otomatis terinisialisasi saat server running).
+
+### 2. Setup Frontend
+- Masuk ke folder `Front-End`.
+- Jalankan aplikasi: `npm run dev`
+
 
 # ide projek kami
 # Voyage-AI

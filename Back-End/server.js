@@ -1,6 +1,6 @@
+require('dotenv').config(); // Baris paling atas
 const express = require('express');
 const cors = require('cors');
-require('dotenv').config();
 const db = require('./db');
 
 // Import Routes
@@ -31,6 +31,10 @@ app.use('/api/planner', plannerRoutes);
 async function initDb() {
   try {
     console.log("Checking & Initializing Database Tables in Supabase...");
+    
+    // Ping database sederhana untuk memastikan koneksi hidup
+    await db.query('SELECT NOW()');
+
     await db.query(`
       CREATE TABLE IF NOT EXISTS users (
         id SERIAL PRIMARY KEY,
@@ -61,7 +65,8 @@ async function initDb() {
     `);
     console.log("✅ Database tables are synchronized successfully!");
   } catch (err) {
-    console.error("❌ Error connecting to Supabase:", err);
+    console.error("❌ Error connecting to Supabase:");
+    console.error("Detail:", err.message);
   }
 }
 
