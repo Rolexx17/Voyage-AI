@@ -11,6 +11,8 @@ const expenseRoutes = require('./routes/expenseRoutes');
 const emergencyRoutes = require('./routes/emergencyRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
 const plannerRoutes = require('./routes/plannerRoutes');
+const packingRoutes = require('./routes/packingRoutes');
+const journalRoutes = require('./routes/journalRoutes');
 
 const app = express();
 
@@ -31,6 +33,8 @@ app.use('/api/expenses', expenseRoutes);
 app.use('/api/emergency', emergencyRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/planner', plannerRoutes);
+app.use('/api/packing', packingRoutes);
+app.use('/api/journals', journalRoutes);
 
 // FUNGSI AUTO-MIGRATION
 async function initDb() {
@@ -66,6 +70,25 @@ async function initDb() {
         id SERIAL PRIMARY KEY,
         user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
         plan_data JSONB,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+
+      CREATE TABLE IF NOT EXISTS packing_lists (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+        title VARCHAR(255),
+        items JSONB,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+
+      CREATE TABLE IF NOT EXISTS journals (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+        title VARCHAR(255),
+        location VARCHAR(255),
+        story TEXT,
+        rating INTEGER,
+        date DATE,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
     `);

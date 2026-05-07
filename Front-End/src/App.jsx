@@ -11,6 +11,8 @@ import Expenses from './pages/Expenses';
 import Profile from './pages/Profile';
 import Emergency from './pages/Emergency';
 import TravelTools from './pages/TravelTools';
+import PackingTracker from './pages/PackingTracker';
+import TravelJournal from './pages/TravelJournal';
 import { useAuthStore } from './store/useAuthStore';
 
 
@@ -31,8 +33,10 @@ export default function App() {
           <Route path="planner" element={<AIPlanner />} />
           <Route path="recommendations" element={<Recommendations />} />
           <Route path="expenses" element={<Expenses />} />
+          <Route path="packing" element={<PackingTracker />} />
           <Route path="profile" element={<Profile />} />
           <Route path="emergency" element={<Emergency />} />
+          <Route path="journal" element={<TravelJournal />} />
           <Route path="tools" element={<TravelTools />} />
         </Route>
       </Routes>
