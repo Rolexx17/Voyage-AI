@@ -21,6 +21,8 @@ app.use(cors());
 app.use(express.json());
 
 // Logger sederhana untuk memantau request
+// line 25 sampai auto migration, bisa dihapus kalau sudah yakin stabil, atau diganti dengan logger yang lebih canggih 
+// kayak morgan
 app.use((req, res, next) => {
   console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
   next();
