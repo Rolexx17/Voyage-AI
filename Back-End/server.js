@@ -16,10 +16,7 @@ const journalRoutes = require('./routes/journalRoutes');
 
 const app = express();
 
-<<<<<<< Updated upstream
-=======
 // 1. MIDDLEWARE
->>>>>>> Stashed changes
 app.use(cors());
 app.use(express.json());
 
