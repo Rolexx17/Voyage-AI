@@ -21,9 +21,13 @@ app.use(cors());
 app.use(express.json());
 
 // Logger sederhana untuk memantau request
+<<<<<<< HEAD
 //line dari 26 sampai migration jangan dihapus, ini penting untuk debugging dan monitoring request yang masuk ke server.
 
 //mvfkmvb
+=======
+// apa ya
+>>>>>>> cff678c89e0d9985610e5dc9dfc5ed6b77cbf00b
 app.use((req, res, next) => {
   console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
   next();
