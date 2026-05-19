@@ -17,6 +17,7 @@ const journalRoutes = require('./routes/journalRoutes');
 const app = express();
 
 // 1. MIDDLEWARE
+//halo aku
 app.use(cors());
 app.use(express.json());
 
