@@ -13,6 +13,7 @@ const dashboardRoutes = require('./routes/dashboardRoutes');
 const plannerRoutes = require('./routes/plannerRoutes');
 const packingRoutes = require('./routes/packingRoutes');
 const journalRoutes = require('./routes/journalRoutes');
+const aiModelingRoutes = require('./routes/aiModelingRoutes'); // ADDED
 
 const app = express();
 
@@ -36,6 +37,7 @@ app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/planner', plannerRoutes);
 app.use('/api/packing', packingRoutes);
 app.use('/api/journals', journalRoutes);
+app.use('/api/ai-modeling', aiModelingRoutes); // ADDED
 
 // FUNGSI AUTO-MIGRATION
 async function initDb() {

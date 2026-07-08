@@ -13,9 +13,8 @@ import Emergency from './pages/Emergency';
 import TravelTools from './pages/TravelTools';
 import PackingTracker from './pages/PackingTracker';
 import TravelJournal from './pages/TravelJournal';
+import AIModelingLab from './pages/AIModelingLab'; 
 import { useAuthStore } from './store/useAuthStore';
-
-
 
 const Protected = ({ children }) => {
   const auth = useAuthStore(state => state.isAuthenticated);
@@ -38,6 +37,7 @@ export default function App() {
           <Route path="emergency" element={<Emergency />} />
           <Route path="journal" element={<TravelJournal />} />
           <Route path="tools" element={<TravelTools />} />
+          <Route path="ai-modeling" element={<AIModelingLab />} /> 
         </Route>
       </Routes>
     </BrowserRouter>

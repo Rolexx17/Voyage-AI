@@ -2,26 +2,26 @@
 import React, { useEffect, useState } from 'react';
 import { NavLink, useNavigate, Outlet, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  LayoutDashboard, Wallet, User, ShieldAlert, 
-  LogOut, Sparkles, Sun, Moon, Menu, X, Star, Wrench, 
-  Briefcase, BookOpen
+import {
+  LayoutDashboard, Wallet, User, ShieldAlert,
+  LogOut, Sparkles, Sun, Moon, Menu, X, Star, Wrench,
+  Briefcase, BookOpen, Brain // ADDED
 } from 'lucide-react';
 import { useAuthStore } from '../store/useAuthStore';
 import { useThemeStore } from '../store/useThemeStore';
 
 const SidebarLink = ({ to, icon: Icon, label, onClick }) => (
-  <NavLink 
-    to={to} 
+  <NavLink
+    to={to}
     onClick={onClick}
     className={({ isActive }) => `
       flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
-      ${isActive 
-        ? 'bg-brand-600 text-white shadow-md' 
+      ${isActive
+        ? 'bg-brand-600 text-white shadow-md'
         : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-brand-600'}
     `}
   >
-    <Icon size={20} /> 
+    <Icon size={20} />
     <span className="font-medium">{label}</span>
   </NavLink>
 );
@@ -47,6 +47,7 @@ export default function Layout() {
     { to: "/planner", icon: Sparkles, label: "AI Planner" },
     { to: "/recommendations", icon: Star, label: "For You" },
     { to: "/tools", icon: Wrench, label: "Travel Tools" },
+    { to: "/ai-modeling", icon: Brain, label: "AI Modeling Lab" }, // ADDED
     { to: "/expenses", icon: Wallet, label: "Expenses" },
     { to: "/packing", icon: Briefcase, label: "AI Packing" },
     { to: "/emergency", icon: ShieldAlert, label: "Emergency" },
@@ -58,13 +59,13 @@ export default function Layout() {
 
   return (
     <div className="flex min-h-screen bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
-      
+
       {/* Mobile Top Header (Visible only on Mobile) */}
       <div className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-white dark:bg-slate-900 border-b dark:border-slate-800 px-4 flex items-center justify-between z-30">
         <div className="flex items-center gap-2 text-brand-600 font-bold text-xl">
           <Sparkles size={24} /> <span className="dark:text-white">Voyage AI</span>
         </div>
-        <button 
+        <button
           onClick={() => setIsMobileMenuOpen(true)}
           className="p-2 text-slate-600 dark:text-slate-300"
         >
@@ -74,7 +75,7 @@ export default function Layout() {
 
       {/* Sidebar (Desktop & Mobile) */}
       <aside className={`
-        fixed inset-y-0 left-0 z-50 w-64 bg-white dark:bg-slate-900 border-r dark:border-slate-800 p-6 
+        fixed inset-y-0 left-0 z-50 w-64 bg-white dark:bg-slate-900 border-r dark:border-slate-800 p-6
         transform transition-transform duration-300 ease-in-out lg:sticky lg:top-0 lg:h-screen lg:translate-x-0
         ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}
       `}>
@@ -83,7 +84,7 @@ export default function Layout() {
             <Sparkles size={28} /> <span className="dark:text-white">Voyage AI</span>
           </div>
           <div className="flex items-center gap-1">
-            <button 
+            <button
               onClick={toggleTheme}
               className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-yellow-400 hover:ring-2 ring-brand-500 transition-all"
             >
@@ -94,15 +95,15 @@ export default function Layout() {
             </button>
           </div>
         </div>
-        
+
         <nav className="flex-1 space-y-1">
           {menu.map(item => (
             <SidebarLink key={item.to} {...item} onClick={closeMenu} />
           ))}
         </nav>
 
-        <button 
-          onClick={() => { logout(); navigate('/login'); }} 
+        <button
+          onClick={() => { logout(); navigate('/login'); }}
           className="flex items-center gap-3 px-4 py-3 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl mt-auto transition-colors"
         >
           <LogOut size={20} /> Logout
@@ -112,7 +113,7 @@ export default function Layout() {
       {/* Backdrop for Mobile */}
       <AnimatePresence>
         {isMobileMenuOpen && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -126,10 +127,10 @@ export default function Layout() {
       <main className="flex-1 overflow-x-hidden pt-16 lg:pt-0">
         <div className="p-4 lg:p-8 max-w-7xl mx-auto">
           <AnimatePresence mode="wait">
-            <motion.div 
-              key={location.pathname} 
-              initial={{ opacity: 0, y: 5 }} 
-              animate={{ opacity: 1, y: 0 }} 
+            <motion.div
+              key={location.pathname}
+              initial={{ opacity: 0, y: 5 }}
+              animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -5 }}
               transition={{ duration: 0.2 }}
             >
