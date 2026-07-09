@@ -8,6 +8,8 @@ import {
 import { useAuthStore } from '../store/useAuthStore';
 import { useNavigate } from 'react-router-dom';
 
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
+
 export default function Dashboard() {
   const { user } = useAuthStore();
   const navigate = useNavigate();
@@ -57,7 +59,7 @@ export default function Dashboard() {
         }
 
         const currentIP = window.location.hostname;
-        let url = `http://${currentIP}:5000/api/dashboard/insights`;
+        let url = `${API_BASE}/api/dashboard/insights`;
         if (lat && lng) {
           url += `?lat=${lat}&lng=${lng}`;
         }

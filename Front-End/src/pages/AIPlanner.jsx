@@ -27,8 +27,7 @@ export default function AIPlanner() {
   const [vibe, setVibe] = useState('Nature & Relax');
 
   const getApiBase = () => {
-    const currentIP = window.location.hostname;
-    return `http://${currentIP}:5000`;
+    return import.meta.env.VITE_API_BASE_URL;
   };
 
   // LOAD HISTORY DARI POSTGRESQL SAAT HALAMAN DIMUAT

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Brain, Network, Scale, Sigma, Route, Play, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || `http://${window.location.hostname}:5000`;
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
 function JsonBlock({ title, data }) {
   return (

@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { BookOpen, MapPin, Star, Trash2, Calendar, Wand2, Loader2, PenTool } from 'lucide-react';
 import { useJournalStore } from '../store/useJournalStore';
 
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
+
 export default function TravelJournal() {
   const { journals, loading, fetchJournals, addJournal, deleteJournal } = useJournalStore();
   const [formData, setFormData] = useState({ title: '', location: '', story: '', rating: 5, date: new Date().toISOString().split('T')[0] });
@@ -16,7 +18,7 @@ export default function TravelJournal() {
     try {
       const token = localStorage.getItem('token');
       const currentIP = window.location.hostname;
-      const res = await fetch(`http://${currentIP}:5000/api/journals/enhance`, {
+      const res = await fetch(`${API_BASE}/api/journals/enhance`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({ rawText: formData.story })

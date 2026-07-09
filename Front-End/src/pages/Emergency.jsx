@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ShieldAlert, Phone, MapPin, HeartPulse, Info, Loader2, Flame, Navigation } from 'lucide-react';
 
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
+
 export default function Emergency() {
   const [loading, setLoading] = useState(true);
   const [locationName, setLocationName] = useState("Locating...");
@@ -41,8 +43,8 @@ export default function Emergency() {
 
         const currentIP = window.location.hostname;
         const url = lat && lng 
-          ? `http://${currentIP}:5000/api/emergency/local-numbers?lat=${lat}&lng=${lng}`
-          : `http://${currentIP}:5000/api/emergency/local-numbers`;
+          ? `${API_BASE}/api/emergency/local-numbers?lat=${lat}&lng=${lng}`
+          : `${API_BASE}/api/emergency/local-numbers`;
           
         const res = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` } });
         const result = await res.json();

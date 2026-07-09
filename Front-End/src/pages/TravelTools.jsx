@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Globe, DollarSign, Clock, ArrowRightLeft, Sparkles, Loader2, Languages } from 'lucide-react';
 
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
+
 export default function TravelTools() {
   const [activeTab, setActiveTab] = useState('currency');
 
@@ -100,7 +102,7 @@ function Translator() {
     if (!text.trim()) return;
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:5000/api/tools/translate', {
+      const res = await fetch(`${API_BASE}/api/tools/translate`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
