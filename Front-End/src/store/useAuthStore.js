@@ -76,6 +76,30 @@ export const useAuthStore = create((set) => ({
     } catch (e) { return { success: false, error: 'Server error' }; }
   },
 
+  // FIXED: Menambahkan aksi changePassword agar bisa dipanggil oleh Profile.jsx
+  changePassword: async (oldPassword, newPassword) => {
+    const token = localStorage.getItem('token');
+    try {
+      const response = await fetch(`${API_BASE}/api/auth/change-password`, {
+        method: 'PUT',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ oldPassword, newPassword }),
+      });
+      
+      const result = await response.json();
+      if (result.success) {
+        return { success: true };
+      }
+      // Mengembalikan pesan error dari backend jika password lama salah dsb.
+      return { success: false, error: result.error };
+    } catch (e) { 
+      return { success: false, error: 'Server error changing password' }; 
+    }
+  },
+
   logout: () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
