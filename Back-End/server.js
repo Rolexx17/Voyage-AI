@@ -101,6 +101,21 @@ async function initDb() {
   }
 }
 
+const allowedOrigins = (process.env.CORS_ORIGIN || '')
+  .split(',')
+  .map(o => o.trim())
+  .filter(Boolean);
+
+app.use(cors({
+  origin: function (origin, callback) {
+    // allow non-browser requests (no origin) and same-origin tools
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) return callback(null, true);
+    return callback(new Error('Not allowed by CORS'));
+  },
+  credentials: true
+}));
+
 const PORT = process.env.PORT || 5000;
 initDb().then(() => {
   app.listen(PORT, () => {
