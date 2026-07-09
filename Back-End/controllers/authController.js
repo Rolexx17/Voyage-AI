@@ -5,21 +5,22 @@ const config = require('../config');
 const { sendSuccess, sendError } = require('../utils/responseFormat');
 
 class AuthController {
+  // 1. REGISTER
   static async register(req, res) {
     try {
       const { name, email, password, style, budget, food, travelType, interests, hasPets } = req.body;
 
-      // 1. Cek apakah user sudah ada
+      // Cek apakah user sudah ada
       const existingUser = await UserModel.findByEmail(email);
       if (existingUser) {
         return sendError(res, 400, 'Email is already registered');
       }
 
-      // 2. Hash password
+      // Hash password
       const saltRounds = config.auth.saltRounds || 10;
       const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-      // 3. Simpan ke DB Supabase
+      // Simpan ke DB Supabase
       const newUser = await UserModel.create({
         name, email, password: hashedPassword, 
         style, budget, food, travelType, interests, hasPets
@@ -27,12 +28,12 @@ class AuthController {
 
       return sendSuccess(res, 201, 'User registered successfully', newUser);
     } catch (error) {
-      // LOG PENTING: Agar kamu tahu error aslinya di terminal VS Code
-      console.error("❌ ERROR DI REGISTER:", error.message);
+      console.error("❌ ERROR DI REGISTER:", error.message || error);
       return sendError(res, 500, 'Internal Server Error during registration');
     }
   }
 
+  // 2. LOGIN
   static async login(req, res) {
     try {
       const { email, password } = req.body;
@@ -60,44 +61,70 @@ class AuthController {
         user: { id: user.id, name: user.name, email: user.email } 
       });
     } catch (error) {
-      console.error("❌ ERROR DI LOGIN:", error.message);
+      console.error("❌ ERROR DI LOGIN:", error.message || error);
       return sendError(res, 500, 'Internal Server Error');
     }
   }
 
-
+  // 3. UPDATE PROFILE (Fixed 500 Error & Added Validation/Logs)
   static async updateProfile(req, res) {
     try {
-      const { id } = req.user; // Didapat dari middleware auth (akan dibuat di bawah)
+      const { id } = req.user; // Didapat dari middleware auth
       const { name, email } = req.body;
 
+      // Validasi input dasar
+      if (!name || !email) {
+        return sendError(res, 400, 'Name and email are required fields');
+      }
+
+      // Cegah crash akibat unique constraint email di database
+      const existingUser = await UserModel.findByEmail(email);
+      if (existingUser && existingUser.id !== id) {
+        return sendError(res, 400, 'This email address is already in use by another account');
+      }
+
+      // Eksekusi update ke database Supabase
       const updatedUser = await UserModel.updateBasicInfo(id, { name, email });
+      
       return sendSuccess(res, 200, 'Profile updated successfully', updatedUser);
     } catch (error) {
-      return sendError(res, 500, 'Failed to update profile');
+      // LOG PENTING: Supaya error query Supabase kelihatan di log Render / terminal VS Code
+      console.error("❌ ERROR DI UPDATE_PROFILE:", error.message || error);
+      return sendError(res, 500, 'Internal Server Error while updating profile');
     }
   }
 
+  // 4. CHANGE PASSWORD (Added Error Logs)
   static async changePassword(req, res) {
     try {
       const { id } = req.user;
       const { oldPassword, newPassword } = req.body;
 
-      // 1. Ambil data user termasuk password aslinya
-      const user = await UserModel.findById(id);
+      // Validasi input dasar
+      if (!oldPassword || !newPassword) {
+        return sendError(res, 400, 'Old password and new password are required');
+      }
 
-      // 2. Verifikasi password lama
+      // Ambil data user termasuk password aslinya
+      const user = await UserModel.findById(id);
+      if (!user) {
+        return sendError(res, 404, 'User not found');
+      }
+
+      // Verifikasi password lama
       const isMatch = await bcrypt.compare(oldPassword, user.password);
       if (!isMatch) {
         return sendError(res, 401, 'Incorrect old password');
       }
 
-      // 3. Hash password baru & simpan
-      const hashedPassword = await bcrypt.hash(newPassword, config.auth.saltRounds);
+      // Hash password baru & simpan
+      const saltRounds = config.auth.saltRounds || 10;
+      const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
       await UserModel.updatePassword(id, hashedPassword);
 
       return sendSuccess(res, 200, 'Password changed successfully');
     } catch (error) {
+      console.error("❌ ERROR DI CHANGE_PASSWORD:", error.message || error);
       return sendError(res, 500, 'Failed to change password');
     }
   }
