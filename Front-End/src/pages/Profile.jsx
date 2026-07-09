@@ -27,13 +27,19 @@ export default function Profile() {
   const handleUpdate = async (e) => {
     e.preventDefault();
     setLocalError('');
-    const result = await updateProfile(formData);
     
-    if (result.success) {
-      setMsg('Profile updated successfully!');
-      setTimeout(() => setMsg(''), 3000);
-    } else {
-      setLocalError(result.error || 'Failed to update profile');
+    try {
+      const result = await updateProfile(formData);
+      
+      if (result && result.success) {
+        setMsg('Profile updated successfully!');
+        setTimeout(() => setMsg(''), 3000);
+      } else {
+        setLocalError(result?.error || 'Failed to update profile');
+        setTimeout(() => setLocalError(''), 3000);
+      }
+    } catch (err) {
+      setLocalError('A network or server error occurred.');
       setTimeout(() => setLocalError(''), 3000);
     }
   };
@@ -41,6 +47,7 @@ export default function Profile() {
   // Fungsi Ganti Password
   const handleChangePassword = async (e) => {
     e.preventDefault();
+    setLocalError('');
     
     if (pwd.new !== pwd.confirm) {
       setLocalError('New passwords do not match');
@@ -48,11 +55,20 @@ export default function Profile() {
       return;
     }
 
-    const result = await changePassword(pwd.old, pwd.new);
-    if (result.success) {
-      setMsg('Password changed successfully!');
-      setPwd({ old: '', new: '', confirm: '' });
-      setTimeout(() => setMsg(''), 3000);
+    try {
+      const result = await changePassword(pwd.old, pwd.new);
+      
+      if (result && result.success) {
+        setMsg('Password changed successfully!');
+        setPwd({ old: '', new: '', confirm: '' });
+        setTimeout(() => setMsg(''), 3000);
+      } else {
+        setLocalError(result?.error || 'Failed to change password');
+        setTimeout(() => setLocalError(''), 3000);
+      }
+    } catch (err) {
+      setLocalError('A network or server error occurred.');
+      setTimeout(() => setLocalError(''), 3000);
     }
   };
 
