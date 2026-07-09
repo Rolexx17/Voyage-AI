@@ -217,9 +217,9 @@ export default function Profile() {
                         />
                      </div>
                   </div>
-                  <button className="w-full py-4 bg-slate-900 dark:bg-white dark:text-slate-900 text-white rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-black dark:hover:bg-slate-100 transition-all">
-                     Update Password
-                  </button>
+                  <button className="w-full py-4 bg-brand-600 text-white rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-brand-700 hover:shadow-lg hover:shadow-brand-500/30 transition-all">
+                       Update Password
+                    </button>
                </form>
             </section>
          </div>
