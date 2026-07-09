@@ -12,7 +12,6 @@ class UserModel {
   }
 
   static async create({ name, email, password, style, budget, food, travelType, interests, hasPets }) {
-    // Sesuaikan nama kolom dengan tabel di server.js (travel_type, has_pets)
     const query = `
       INSERT INTO users (name, email, password, style, budget, food, travel_type, interests, has_pets)
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
@@ -34,8 +33,25 @@ class UserModel {
     return result.rows[0];
   }
 
+  // FIXED: Menambahkan fungsi updateBasicInfo yang sebelumnya absen/hilang
+  static async updateBasicInfo(id, { name, email }) {
+    // Pastikan ID di-parse ke Integer agar match dengan tipe data int4 database
+    const numericId = parseInt(id, 10);
+
+    const query = `
+      UPDATE users 
+      SET name = $1, email = $2 
+      WHERE id = $3 
+      RETURNING id, name, email, style, travel_type
+    `;
+    
+    const result = await db.query(query, [name, email, numericId]);
+    return result.rows[0];
+  }
+
   static async updatePassword(id, hashedPassword) {
-    await db.query('UPDATE users SET password = $1 WHERE id = $2', [hashedPassword, id]);
+    const numericId = parseInt(id, 10);
+    await db.query('UPDATE users SET password = $1 WHERE id = $2', [hashedPassword, numericId]);
   }
 }
 
